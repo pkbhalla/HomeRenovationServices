@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+{% block remtitle %} Contractor Dashboard {% endblock %}
+{% block cont %}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+{% endblock %}
+{% block content %}
+<nav class="navbar navbar-dark bg-warning">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="#">RWU - Contractor {{ contractor_name }}</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup"
+            aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+            <div class="navbar-nav">
+                <a class="nav-link" href="/contractor_dashboard">Home</a>
+                <a class="nav-link" href="/contractor_dashboard/search">Search</a>
+                <a class="nav-link active" aria-current="page" href="/contractor_dashboard/open_requests">Requests</a>
+        
+                <a class="nav-link" href="/logout">Logout</a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+
+<div class="container mt-5">
+    <h1 class="text-center">Open Requests</h1>
+    {% if new_requests %}
+    {% for req in new_requests %}
+    <div class="card mb-3">
+        <div class="card-body">
+            <h5 class="card-title">{{ req.service.service_name }}</h5>
+            <!-- <p class="card-text">{{ req.description }}</p> -->
+            <p class="card-text">Created on {{ req.date_created }}</p>
+            <p class="card-text">Created By {{ req.homeowner.user_name }}</p>
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#bidModal{{ req.id }}">
+                Bid Request
+            </button>
+        </div>
+    </div>
+
+
+    <!-- Modal -->
+    <div class="modal fade" id="bidModal{{ req.id }}" tabindex="-1" aria-labelledby="bidModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="bidModalLabel">Bid Request</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="/contractor_dashboard/bid_request/{{ req.id }}" method="POST">
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Description</label>
+                            <textarea class="form-control" id="description" name="description"></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Bid</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<p>No open requests</p>
+{% endif %}
+
+
+<div class="container mt-5">
+<h1 class="text-center">Sent Requests</h1>
+{% if sent_requests %}
+{% for req in sent_requests %}
+<div class="card mb-3">
+    <div class="card-body">
+        <h5 class="card-title">You requested for : {{ req.service.service_name }}</h5>
+        <p class="card-text">{{ req.description }}</p>
+        <p class="card-text">Requested On: {{ req.date_created }}</p>
+    </div>
+</div>
+{% endfor %}
+{% else %}
+<p>No sent requests</p>
+{% endif %}
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4"
+    crossorigin="anonymous"></script>
+{% endblock %}
